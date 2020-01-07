@@ -28,13 +28,8 @@ pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
 }
 //leetcode submit region end(Prohibit modification and deletion)
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let rst = two_sum(vec![2, 4, 6, 3], 7);
-        assert_eq!(vec![1,3],rst);
-    }
+#[test]
+fn two_sum_test() {
+    let rst = two_sum(vec![2, 4, 6, 3], 7);
+    assert_eq!(rst, vec![1,3]);
 }
