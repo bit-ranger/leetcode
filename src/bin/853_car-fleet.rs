@@ -48,9 +48,9 @@ pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
         return 0;
     }
 
-    let mut cars: Vec<(i32, f32)> = Vec::with_capacity(position.len());
+    let mut cars: Vec<(i32, f64)> = Vec::with_capacity(position.len());
     for i in 0..position.len() {
-        let time = ((target - position[i]) / speed[i]) as f32;
+        let time = (target - position[i]) as f64 / speed[i] as f64;
         cars.push((position[i], time));
     }
     //按位置排序
@@ -76,6 +76,6 @@ pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
 
 #[test]
 fn car_fleet_test() {
-    let rst = car_fleet(10, vec![10,8,0,5,3], vec![2,4,1,1,3]);
-    assert_eq!(rst, 3);
+    let rst = car_fleet(10, vec![6,8], vec![3,2]);
+    assert_eq!(rst, 2);
 }
