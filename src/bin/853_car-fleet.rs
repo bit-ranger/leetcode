@@ -66,7 +66,7 @@ pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
         }
         i -= 1;
     }
-    return rst + (if i == 0 { 1 } else { 0 }); //lone car is fleet (if it exists)
+    return rst + (if i == 0 { 1 } else { 0 });
 }
 //leetcode submit region end(Prohibit modification and deletion)
 
