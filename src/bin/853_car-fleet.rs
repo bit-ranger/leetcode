@@ -49,16 +49,20 @@ pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
         let time = ((target - position[i]) / speed[i]) as f32;
         cars.push((position[i], time));
     }
+    //按位置排序
     cars.sort_by(|a, b| i32::cmp(&a.0, &b.0));
 
     let mut rst = 0;
     let mut i = position.len() - 1;
 
     while i > 0 {
-        if cars[i].1 < cars[i - 1].1 {
+        if cars[i].1 < cars[i-1].1 {
+            //前面的车更快，自成车队
             rst += 1;
         } else {
-            cars[i - 1] = cars[i];
+            //前面的车更慢
+            //后面的车追上后减速
+            cars[i-1] = cars[i];
         }
         i -= 1;
     }
