@@ -34,10 +34,12 @@
 
 
 
+
+
+//leetcode submit region begin(Prohibit modification and deletion)
 use std::collections::BinaryHeap;
 use std::cmp::{Ordering, max};
 
-//leetcode submit region begin(Prohibit modification and deletion)
 struct Node{
     row: usize,
     col: usize,
@@ -68,6 +70,14 @@ impl PartialOrd for Node {
 }
 
 pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
+    if height_map.len() == 0 {
+        return 0;
+    }
+
+    if height_map[0].len() == 0 {
+        return 0;
+    }
+
     let row_cnt = height_map.len();
     let col_cnt = height_map[0].len();
     let mut visited:Vec<Vec<bool>> =  Vec::with_capacity(row_cnt);
