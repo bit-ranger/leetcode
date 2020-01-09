@@ -35,7 +35,7 @@
 
 
 use std::collections::BinaryHeap;
-use std::cmp::Ordering;
+use std::cmp::{Ordering, max};
 
 //leetcode submit region begin(Prohibit modification and deletion)
 struct Node{
@@ -44,9 +44,20 @@ struct Node{
     hei: i32
 }
 
+impl Eq for Node{
+
+}
+
 impl Ord for Node {
     fn cmp(&self, other: &Node) -> Ordering {
-        self.hei.cmp(&other.hei)
+        other.hei.cmp(&self.hei)
+    }
+}
+
+impl PartialEq for Node{
+
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other) == Ordering::Equal
     }
 }
 
@@ -56,49 +67,134 @@ impl PartialOrd for Node {
     }
 }
 
-impl Solution {
-    pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
-        let row_cnt = height_map.len();
-        let col_cnt = height_map[0].len();
-        let mut visited:Vec<Vec<i32>> =  Vec::new();
+pub fn trap_rain_water(height_map: Vec<Vec<i32>>) -> i32 {
+    let row_cnt = height_map.len();
+    let col_cnt = height_map[0].len();
+    let mut visited:Vec<Vec<bool>> =  Vec::with_capacity(row_cnt);
 
-        let mut heap:BinaryHeap<Node> = BinaryHeap::with_capacity(row_cnt * col_cnt );
-
-        //将竖边框放入堆
-        for r in 0..row_cnt {
-            heap.add(Node{
-                row: r,
-                col: 0,
-                hei: height_map[r][0]
-            });
-            heap.add(Node{
-                row: r,
-                col: col_cnt - 1,
-                hei: height_map[r][col_cnt-1]
-            });
-            visited[r][0] = 1;
-            visited[r][col_cnt-1] = 1;
+    //init visited
+    for _ in 0..row_cnt {
+        let mut row = Vec::with_capacity(col_cnt);
+        for _ in 0..col_cnt{
+            row.push(false);
         }
-
-        //将横边框放入堆
-        for c in 0..col_cnt {
-            heap.add(Node{
-                row: 0,
-                col: c,
-                hei: height_map[0][c]
-            });
-            heap.add(Node{
-                row: row_cnt-1,
-                col: c,
-                hei: height_map[row_cnt-1][c]
-            });
-            visited[0][c] = 1;
-            visited[row_cnt-1][c] = 1;
-        }
-
-
-
-
+        visited.push(row);
     }
+
+
+    let mut heap:BinaryHeap<Node> = BinaryHeap::with_capacity(row_cnt * col_cnt );
+
+    //将竖边框放入堆
+    for r in 0..row_cnt {
+        heap.push(Node{
+            row: r,
+            col: 0,
+            hei: height_map[r][0]
+        });
+        heap.push(Node{
+            row: r,
+            col: col_cnt - 1,
+            hei: height_map[r][col_cnt-1]
+        });
+        visited[r][0] = true;
+        visited[r][col_cnt-1] = true;
+    }
+
+    //将横边框放入堆
+    for c in 0..col_cnt {
+        heap.push(Node{
+            row: 0,
+            col: c,
+            hei: height_map[0][c]
+        });
+        heap.push(Node{
+            row: row_cnt-1,
+            col: c,
+            hei: height_map[row_cnt-1][c]
+        });
+        visited[0][c] = true;
+        visited[row_cnt-1][c] = true;
+    }
+
+    let mut curr_min_bound = std::i32::MIN;
+    let mut total = 0;
+    while heap.len() > 0 {
+        //取出边框中高度最低的节点
+        let node = heap.pop().unwrap();
+        curr_min_bound = max(curr_min_bound, node.hei);
+
+        //下边框，向上收缩
+        if node.row > 0 && !visited[node.row-1][node.col]{
+            heap.push(Node{
+                row: node.row-1,
+                col: node.col,
+                hei: height_map[node.row-1][node.col]
+            });
+            visited[node.row-1][node.col] = true;
+
+            let target_height = height_map[node.row-1][node.col];
+            if target_height < curr_min_bound{
+                total += curr_min_bound - target_height;
+            }
+        }
+
+        //上边框，向下收缩
+        if node.row < row_cnt-1 && !visited[node.row+1][node.col]{
+            heap.push(Node{
+                row: node.row+1,
+                col: node.col,
+                hei: height_map[node.row+1][node.col]
+            });
+            visited[node.row+1][node.col] = true;
+
+            let target_height = height_map[node.row+1][node.col];
+            if target_height < curr_min_bound{
+                total += curr_min_bound - target_height;
+            }
+        }
+
+        //左边框，向右收缩
+        if node.col < col_cnt-1 && !visited[node.row][node.col+1]{
+            heap.push(Node{
+                row: node.row,
+                col: node.col+1,
+                hei: height_map[node.row][node.col+1]
+            });
+            visited[node.row][node.col+1] = true;
+
+            let target_height = height_map[node.row][node.col+1];
+            if target_height < curr_min_bound{
+                total += curr_min_bound - target_height;
+            }
+        }
+
+        //右边框，向左收缩
+        if node.col > 0 && !visited[node.row][node.col-1]{
+            heap.push(Node{
+                row: node.row,
+                col: node.col-1,
+                hei: height_map[node.row][node.col-1]
+            });
+            visited[node.row][node.col-1] = true;
+
+            let target_height = height_map[node.row][node.col-1];
+            if target_height < curr_min_bound{
+                total += curr_min_bound - target_height;
+            }
+        }
+    }
+
+    return total;
 }
 //leetcode submit region end(Prohibit modification and deletion)
+
+
+#[test]
+fn trap_rain_water_test() {
+    let rst = trap_rain_water(vec![
+        vec![1,4,3,1,3,2],
+        vec![3,2,1,3,2,4],
+        vec![2,3,3,2,3,1]
+    ]);
+    assert_eq!(rst, 4);
+}
