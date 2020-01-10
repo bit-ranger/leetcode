@@ -14,8 +14,9 @@
 
 
 //leetcode submit region begin(Prohibit modification and deletion)
+use std::collections::HashMap;
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    use std::collections::HashMap;
+
     let mut map:HashMap<i32, i32> =  HashMap::new();
     for (i, num) in nums.into_iter().enumerate(){
         let complement = target-num;
